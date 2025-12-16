@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/genai";
 import { FormData } from '../types';
 
 const buildPrompt = (formData: FormData): string => {
@@ -30,15 +30,14 @@ export const generateText = async (formData: FormData): Promise<string> => {
   }
   
   try {
-    const ai = new GoogleGenAI({ apiKey });
-    const prompt = buildPrompt(formData);
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
     
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
-      contents: prompt,
-    });
+    const prompt = buildPrompt(formData);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    const text = response.text;
     if (!text) {
         throw new Error("未能生成文本，请调整您的输入后重试。");
     }
