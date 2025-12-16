@@ -24,12 +24,13 @@ const buildPrompt = (formData: FormData): string => {
 };
 
 export const generateText = async (formData: FormData): Promise<string> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API key is not configured.");
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('API key is not configured. Please set VITE_GEMINI_API_KEY in .env.local');
   }
   
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = buildPrompt(formData);
     
     const response = await ai.models.generateContent({
